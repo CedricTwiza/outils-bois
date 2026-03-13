@@ -181,7 +181,13 @@ function setState(box, state) {
   else if (state === 'done') el.classList.add('done');
 }
 
-// Remplir largeurs
+function sendHeight() {
+  window.parent.postMessage({ type: 'iframeHeight', height: document.body.scrollHeight }, '*');
+}
+
+var observer = new MutationObserver(sendHeight);
+observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
 var largeurs = [];
 data.forEach(function(r) { if (largeurs.indexOf(r[1]) < 0) largeurs.push(r[1]); });
 largeurs.sort(function(a,b){ return a-b; });
@@ -280,6 +286,7 @@ document.getElementById('toggle-btn').addEventListener('click', function() {
 });
 
 renderTable(null);
+sendHeight();
 </script>
 
 </body>
