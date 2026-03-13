@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abaque poutres en chêne</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; color: #1a1a1a; line-height: 1.5; padding: 16px; background: #fff; }
+  h2 { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
+  .subtitle { font-size: 11px; color: #666; text-align: center; margin-bottom: 16px; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .filter-box {
+    border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px;
+    background: #f8f7f5; display: flex; flex-direction: column; gap: 6px;
+    transition: opacity .2s, border-color .2s, background .2s;
+  }
+  .filter-box.disabled { opacity: 0.4; pointer-events: none; }
+  .filter-box.active { border-color: #2563eb; background: #eff6ff; }
+  .filter-box.done { border-color: #16a34a; background: #f0fdf4; }
+  .filter-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; color: #666;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .filter-box.active .filter-label { color: #2563eb; }
+  .filter-box.done .filter-label { color: #16a34a; }
+  .step-badge {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #ccc; color: #fff;
+    font-size: 10px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .filter-box.active .step-badge { background: #2563eb; }
+  .filter-box.done .step-badge { background: #16a34a; }
+  select {
+    border: 1px solid #ccc; border-radius: 6px;
+    background: #fff; color: #1a1a1a;
+    padding: 6px 8px; font-size: 13px; width: 100%; font-family: inherit;
+  }
+  .result-card {
+    border: 1px solid #ddd; border-radius: 10px;
+    background: #fff; padding: 16px 20px; display: none; margin-bottom: 12px;
+  }
+  .result-card.visible { display: block; }
+  .result-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .result-dim { font-size: 18px; font-weight: 600; }
+  .result-cube { font-size: 12px; color: #888; }
+  .result-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .result-cell { background: #f8f7f5; border-radius: 6px; padding: 10px 6px; text-align: center; }
+  .result-cell.active { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .portee-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .result-cell.active .portee-label { color: #2563eb; }
+  .charge { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+  .result-cell.active .charge { color: #2563eb; }
+  .unit { font-size: 10px; color: #aaa; }
+  .result-cell.active .unit { color: #60a5fa; }
+  .constante-row { margin-top: 12px; font-size: 12px; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+  .empty-state { text-align: center; padding: 20px 0; color: #888; font-size: 13px; }
+  .table-toggle { font-size: 12px; color: #888; cursor: pointer; text-align: center; margin-bottom: 8px; user-select: none; }
+  .table-toggle:hover { color: #333; }
+  .scroll { max-height: 340px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; display: none; }
+  .scroll.open { display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { background: #f3f2ef; border: 1px solid #e5e5e5; padding: 5px 6px; text-align: center; font-weight: 600; font-size: 11px; color: #666; position: sticky; top: 0; }
+  thead th.left { text-align: left; }
+  tbody td { border: 1px solid #eee; padding: 4px 6px; text-align: right; color: #1a1a1a; }
+  tbody td.dim { text-align: left; font-weight: 600; }
+  tbody td.cube { color: #999; }
+  tbody tr:hover td { background: #f8f7f5; }
+  tbody tr.hl td { background: #eff6ff; color: #2563eb; }
+  .note { font-size: 11px; color: #888; margin-top: 10px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 8px; }
+</style>
+</head>
+<body>
+
+<h2>Charges que peuvent supporter les poutres en chêne</h2>
+<p class="subtitle">Charge uniformément répartie — section rectangulaire posée sur champ</p>
+
+<div class="filters">
+  <div class="filter-box active" id="box-l">
+    <div class="filter-label"><span class="step-badge">1</span>Largeur (cm)</div>
+    <select id="sel-l">
+      <option value="">Choisir…</option>
+    </select>
+  </div>
+  <div class="filter-box disabled" id="box-h">
+    <div class="filter-label"><span class="step-badge">2</span>Hauteur (cm)</div>
+    <select id="sel-h">
+      <option value="">Choisir…</option>
+    </select>
+  </div>
+  <div class="filter-box disabled" id="box-p">
+    <div class="filter-label"><span class="step-badge">3</span>Portée (m)</div>
+    <select id="sel-p">
+      <option value="">Toutes</option>
+    </select>
+  </div>
+</div>
+
+<div id="result-card" class="result-card">
+  <div class="result-header">
+    <span class="result-dim" id="res-dim"></span>
+    <span class="result-cube" id="res-cube"></span>
+  </div>
+  <div class="result-grid" id="res-grid"></div>
+  <div class="constante-row" id="res-const"></div>
+</div>
+<div id="empty-state" class="empty-state">Sélectionne la largeur pour commencer.</div>
+
+<div class="table-toggle" id="toggle-btn">▾ Voir toute la table</div>
+<div class="scroll" id="full-table">
+  <table>
+    <thead>
+      <tr>
+        <th class="left" rowspan="2">Dimensions</th>
+        <th rowspan="2">m³/m</th>
+        <th colspan="5">Charge (kg) pour une portée de</th>
+        <th rowspan="2">Cste</th>
+      </tr>
+      <tr><th>2 m</th><th>3 m</th><th>4 m</th><th>5 m</th><th>6 m</th></tr>
+    </thead>
+    <tbody id="full-tbody"></tbody>
+  </table>
+</div>
+
+<p class="note">
+  <strong>Nota.</strong> Pour une portée quelconque, diviser la « Constante » par la longueur de la portée. Pour une charge en milieu de poutre, prendre la moitié des valeurs. Ces charges s'entendent pour des poutres posées sur champ.
+</p>
+
+<script>
+var data = [
+  ["8 × 8",   8,  8,  0.0064,  205,  136,  102,  82,   68,  410],
+  ["8 × 16",  8,  16, 0.0128,  819,  546,  409,  327,  273, 1638],
+  ["10 × 10", 10, 10, 0.010,   405,  266,  200,  160,  133,  800],
+  ["10 × 20", 10, 20, 0.020,  1600, 1066,  800,  640,  533, 3200],
+  ["12 × 12", 12, 12, 0.0144,  691,  460,  346,  276,  230, 1382],
+  ["12 × 20", 12, 20, 0.024,  1920, 1280,  960,  768,  640, 3840],
+  ["12 × 25", 12, 25, 0.030,  3000, 2000, 1500, 1200, 1000, 6000],
+  ["15 × 15", 15, 15, 0.0225, 1350,  900,  675,  540,  450, 2700],
+  ["15 × 20", 15, 20, 0.030,  2400, 1600, 1200,  960,  800, 4800],
+  ["15 × 25", 15, 25, 0.0375, 3750, 2500, 1875, 1500, 1250, 7500],
+  ["15 × 30", 15, 30, 0.045,  5400, 3600, 2700, 2160, 1800,10800],
+  ["18 × 18", 18, 18, 0.0324, 2333, 1555, 1166,  953,  778, 4666],
+  ["18 × 20", 18, 20, 0.036,  2880, 1920, 1440, 1152,  960, 5760],
+  ["18 × 25", 18, 25, 0.045,  4500, 3000, 2250, 1800, 1500, 9000],
+  ["18 × 30", 18, 30, 0.054,  6480, 4320, 3240, 2592, 2160,12960],
+  ["20 × 20", 20, 20, 0.040,  3200, 2133, 1600, 1280, 1067, 6400],
+  ["20 × 25", 20, 25, 0.050,  5000, 3333, 2500, 2000, 1667,10000],
+  ["20 × 30", 20, 30, 0.060,  7200, 4800, 3600, 2880, 2400,14400],
+  ["20 × 35", 20, 35, 0.070,  9800, 6533, 4900, 3920, 3267,19600],
+  ["22 × 22", 22, 22, 0.0484, 4250, 2839, 2130, 1703, 1420, 8518],
+  ["22 × 30", 22, 30, 0.066,  7920, 5280, 3960, 3168, 2640,15840],
+  ["22 × 35", 22, 35, 0.077, 10780, 7186, 5390, 4312, 3593,21560],
+  ["25 × 25", 25, 25, 0.0625, 6250, 4167, 3125, 2500, 2083,12500],
+  ["25 × 30", 25, 30, 0.075,  9000, 6000, 4500, 3600, 3000,18000],
+  ["25 × 35", 25, 35, 0.0875,12250, 8166, 6125, 4900, 4083,24500],
+  ["25 × 40", 25, 40, 0.100, 16000,10666, 8000, 6400, 5333,32000],
+  ["30 × 30", 30, 30, 0.090, 10800, 7200, 5400, 4320, 3600,21600],
+  ["30 × 35", 30, 35, 0.105, 14700, 9800, 7350, 5880, 4900,29400],
+  ["30 × 40", 30, 40, 0.120, 19200,12800, 9600, 7680, 6400,38400],
+  ["35 × 35", 35, 35, 0.1225,17150,11433, 8575, 6860, 5716,34300],
+  ["35 × 40", 35, 40, 0.140, 22400,14933,11200, 8960, 7466,44800],
+  ["35 × 50", 35, 50, 0.175, 35000,23333,17500,14000,11666,70000],
+  ["40 × 40", 40, 40, 0.160, 25000,17066,12800,10240, 8533,51200],
+  ["40 × 50", 40, 50, 0.200, 40000,26666,20000,16000,13333,80000]
+];
+
+var portees = [2,3,4,5,6];
+var fmt = function(v) { return v.toLocaleString('fr-FR'); };
+
+var selL = document.getElementById('sel-l');
+var selH = document.getElementById('sel-h');
+var selP = document.getElementById('sel-p');
+
+function setState(box, state) {
+  var el = document.getElementById('box-' + box);
+  el.classList.remove('active','done','disabled');
+  if (state === 'disabled') el.classList.add('disabled');
+  else if (state === 'active') el.classList.add('active');
+  else if (state === 'done') el.classList.add('done');
+}
+
+// Remplir largeurs
+var largeurs = [];
+data.forEach(function(r) { if (largeurs.indexOf(r[1]) < 0) largeurs.push(r[1]); });
+largeurs.sort(function(a,b){ return a-b; });
+largeurs.forEach(function(v) {
+  var o = document.createElement('option');
+  o.value = v; o.textContent = v + ' cm';
+  selL.appendChild(o);
+});
+
+selL.addEventListener('change', function() {
+  var l = parseInt(selL.value);
+  selH.innerHTML = '<option value="">Choisir\u2026</option>';
+  selP.innerHTML = '<option value="">Toutes</option>';
+  document.getElementById('result-card').classList.remove('visible');
+  if (!l) {
+    setState('l','active'); setState('h','disabled'); setState('p','disabled');
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('empty-state').textContent = 'Sélectionne la largeur pour commencer.';
+    renderTable(null); return;
+  }
+  var hauteurs = [];
+  data.forEach(function(r) { if (r[1]===l && hauteurs.indexOf(r[2])<0) hauteurs.push(r[2]); });
+  hauteurs.sort(function(a,b){ return a-b; });
+  hauteurs.forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v + ' cm';
+    selH.appendChild(o);
+  });
+  setState('l','done'); setState('h','active'); setState('p','disabled');
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('empty-state').textContent = 'Maintenant choisis la hauteur.';
+  renderTable(null);
+});
+
+selH.addEventListener('change', function() {
+  var h = parseInt(selH.value);
+  selP.innerHTML = '<option value="">Toutes</option>';
+  document.getElementById('result-card').classList.remove('visible');
+  if (!h) {
+    setState('h','active'); setState('p','disabled');
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('empty-state').textContent = 'Maintenant choisis la hauteur.';
+    renderTable(null); return;
+  }
+  portees.forEach(function(v) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v + ' m';
+    selP.appendChild(o);
+  });
+  setState('h','done'); setState('p','active');
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('empty-state').textContent = 'Choisis une portée ou consulte toutes les valeurs.';
+  compute();
+});
+
+selP.addEventListener('change', compute);
+
+function compute() {
+  var l = parseInt(selL.value);
+  var h = parseInt(selH.value);
+  var p = selP.value;
+  if (!l || !h) return;
+  var row = null;
+  for (var i=0; i<data.length; i++) {
+    if (data[i][1]===l && data[i][2]===h) { row=data[i]; break; }
+  }
+  if (!row) return;
+  if (p) setState('p','done'); else setState('p','active');
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('result-card').classList.add('visible');
+  document.getElementById('res-dim').textContent = row[0] + ' cm';
+  document.getElementById('res-cube').textContent = 'Volume : ' + row[3].toFixed(4) + ' m³/m courant';
+  document.getElementById('res-grid').innerHTML = portees.map(function(pt, i) {
+    var active = (p == pt) ? ' active' : '';
+    return '<div class="result-cell'+active+'"><div class="portee-label">'+pt+' m</div><div class="charge">'+fmt(row[4+i])+'</div><div class="unit">kg</div></div>';
+  }).join('');
+  var cste = row[9];
+  var note = 'Constante : <strong>'+fmt(cste)+'</strong> — pour toute portée L : charge = '+fmt(cste)+' ÷ L';
+  if (p) note += ' → <strong>'+fmt(Math.round(cste / parseInt(p)))+' kg</strong> pour '+p+' m';
+  document.getElementById('res-const').innerHTML = note;
+  renderTable(row[0]);
+}
+
+function renderTable(activeDim) {
+  document.getElementById('full-tbody').innerHTML = data.map(function(r) {
+    var hl = (activeDim && r[0]===activeDim) ? ' class="hl"' : '';
+    var cells = portees.map(function(_,i){ return '<td>'+fmt(r[4+i])+'</td>'; }).join('');
+    return '<tr'+hl+'><td class="dim">'+r[0]+'</td><td class="cube">'+r[3].toFixed(4)+'</td>'+cells+'<td>'+fmt(r[9])+'</td></tr>';
+  }).join('');
+}
+
+document.getElementById('toggle-btn').addEventListener('click', function() {
+  var t = document.getElementById('full-table');
+  t.classList.toggle('open');
+  this.textContent = t.classList.contains('open') ? '▴ Masquer la table' : '▾ Voir toute la table';
+});
+
+renderTable(null);
+</script>
+
+</body>
+</html>
