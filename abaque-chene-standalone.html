@@ -10,38 +10,18 @@
   h2 { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
   .subtitle { font-size: 11px; color: #666; text-align: center; margin-bottom: 16px; }
   .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .filter-box {
-    border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px;
-    background: #f8f7f5; display: flex; flex-direction: column; gap: 6px;
-    transition: opacity .2s, border-color .2s, background .2s;
-  }
+  .filter-box { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; background: #f8f7f5; display: flex; flex-direction: column; gap: 6px; transition: opacity .2s, border-color .2s, background .2s; }
   .filter-box.disabled { opacity: 0.4; pointer-events: none; }
   .filter-box.active { border-color: #2563eb; background: #eff6ff; }
   .filter-box.done { border-color: #16a34a; background: #f0fdf4; }
-  .filter-label {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 600; color: #666;
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
+  .filter-label { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
   .filter-box.active .filter-label { color: #2563eb; }
   .filter-box.done .filter-label { color: #16a34a; }
-  .step-badge {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: #ccc; color: #fff;
-    font-size: 10px; font-weight: 600;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
+  .step-badge { width: 18px; height: 18px; border-radius: 50%; background: #ccc; color: #fff; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .filter-box.active .step-badge { background: #2563eb; }
   .filter-box.done .step-badge { background: #16a34a; }
-  select {
-    border: 1px solid #ccc; border-radius: 6px;
-    background: #fff; color: #1a1a1a;
-    padding: 6px 8px; font-size: 13px; width: 100%; font-family: inherit;
-  }
-  .result-card {
-    border: 1px solid #ddd; border-radius: 10px;
-    background: #fff; padding: 16px 20px; display: none; margin-bottom: 12px;
-  }
+  select { border: 1px solid #ccc; border-radius: 6px; background: #fff; color: #1a1a1a; padding: 6px 8px; font-size: 13px; width: 100%; font-family: inherit; }
+  .result-card { border: 1px solid #ddd; border-radius: 10px; background: #fff; padding: 16px 20px; display: none; margin-bottom: 12px; }
   .result-card.visible { display: block; }
   .result-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
   .result-dim { font-size: 18px; font-weight: 600; }
@@ -56,6 +36,35 @@
   .unit { font-size: 10px; color: #aaa; }
   .result-cell.active .unit { color: #60a5fa; }
   .constante-row { margin-top: 12px; font-size: 12px; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+
+  .email-block {
+    border: 1px solid #16a34a; border-radius: 8px; padding: 12px 14px;
+    background: #f0fdf4; margin-top: 12px;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity .5s ease, max-height .5s ease;
+  }
+  .email-block.visible { opacity: 1; max-height: 200px; }
+  .email-hook { font-size: 12px; font-weight: 600; color: #15803d; margin-bottom: 2px; }
+  .email-sub { font-size: 11px; color: #16a34a; margin-bottom: 10px; }
+  .email-row { display: flex; gap: 8px; }
+  .email-input { flex: 1; border: 1px solid #86efac; border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: inherit; color: #1a1a1a; background: #fff; }
+  .email-input:focus { outline: none; border-color: #16a34a; }
+  .email-btn { background: #16a34a; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .email-btn:hover { background: #15803d; }
+  .email-rgpd { font-size: 10px; color: #86efac; margin-top: 6px; }
+
+  .email-confirm {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid #16a34a; border-radius: 8px; padding: 12px 14px;
+    background: #f0fdf4; margin-top: 12px;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity .5s ease, max-height .5s ease;
+  }
+  .email-confirm.visible { opacity: 1; max-height: 100px; }
+  .confirm-dot { width: 24px; height: 24px; border-radius: 50%; background: #16a34a; color: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .confirm-text { font-size: 12px; font-weight: 600; color: #15803d; }
+  .confirm-sub { font-size: 11px; color: #16a34a; }
+
   .empty-state { text-align: center; padding: 20px 0; color: #888; font-size: 13px; }
   .table-toggle { font-size: 12px; color: #888; cursor: pointer; text-align: center; margin-bottom: 8px; user-select: none; }
   .table-toggle:hover { color: #333; }
@@ -80,21 +89,15 @@
 <div class="filters">
   <div class="filter-box active" id="box-l">
     <div class="filter-label"><span class="step-badge">1</span>Largeur (cm)</div>
-    <select id="sel-l">
-      <option value="">Choisir…</option>
-    </select>
+    <select id="sel-l"><option value="">Choisir…</option></select>
   </div>
   <div class="filter-box disabled" id="box-h">
     <div class="filter-label"><span class="step-badge">2</span>Hauteur (cm)</div>
-    <select id="sel-h">
-      <option value="">Choisir…</option>
-    </select>
+    <select id="sel-h"><option value="">Choisir…</option></select>
   </div>
   <div class="filter-box disabled" id="box-p">
     <div class="filter-label"><span class="step-badge">3</span>Portée (m)</div>
-    <select id="sel-p">
-      <option value="">Toutes</option>
-    </select>
+    <select id="sel-p"><option value="">Choisir…</option></select>
   </div>
 </div>
 
@@ -106,6 +109,25 @@
   <div class="result-grid" id="res-grid"></div>
   <div class="constante-row" id="res-const"></div>
 </div>
+
+<div class="email-block" id="email-block">
+  <div class="email-hook">Recevoir ce résultat par email</div>
+  <div class="email-sub" id="email-sub"></div>
+  <div class="email-row">
+    <input type="email" class="email-input" id="email-input" placeholder="votre@email.fr">
+    <button class="email-btn" onclick="sendEmail()">Envoyer</button>
+  </div>
+  <div class="email-rgpd">Pas de spam — uniquement pour cet envoi.</div>
+</div>
+
+<div class="email-confirm" id="email-confirm">
+  <div class="confirm-dot">✓</div>
+  <div>
+    <div class="confirm-text" id="confirm-text"></div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+  </div>
+</div>
+
 <div id="empty-state" class="empty-state">Sélectionne la largeur pour commencer.</div>
 
 <div class="table-toggle" id="toggle-btn">▾ Voir toute la table</div>
@@ -168,6 +190,8 @@ var data = [
 
 var portees = [2,3,4,5,6];
 var fmt = function(v) { return v.toLocaleString('fr-FR'); };
+var currentRow = null;
+var emailTimer = null;
 
 var selL = document.getElementById('sel-l');
 var selH = document.getElementById('sel-h');
@@ -181,27 +205,37 @@ function setState(box, state) {
   else if (state === 'done') el.classList.add('done');
 }
 
-function sendHeight() {
-  window.parent.postMessage({ type: 'iframeHeight', height: document.body.scrollHeight }, '*');
+function resetEmail() {
+  if (emailTimer) { clearTimeout(emailTimer); emailTimer = null; }
+  document.getElementById('email-block').classList.remove('visible');
+  document.getElementById('email-confirm').classList.remove('visible');
+  document.getElementById('email-input').value = '';
 }
 
-var observer = new MutationObserver(sendHeight);
-observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+function showEmailBlock(row) {
+  resetEmail();
+  emailTimer = setTimeout(function() {
+    document.getElementById('email-sub').textContent = 'On t\'envoie la fiche complète ' + row[0] + ' cm.';
+    document.getElementById('email-block').classList.add('visible');
+    emailTimer = null;
+  }, 1000);
+}
 
+// Remplir largeurs
 var largeurs = [];
 data.forEach(function(r) { if (largeurs.indexOf(r[1]) < 0) largeurs.push(r[1]); });
 largeurs.sort(function(a,b){ return a-b; });
 largeurs.forEach(function(v) {
   var o = document.createElement('option');
-  o.value = v; o.textContent = v + ' cm';
-  selL.appendChild(o);
+  o.value = v; o.textContent = v + ' cm'; selL.appendChild(o);
 });
 
 selL.addEventListener('change', function() {
   var l = parseInt(selL.value);
   selH.innerHTML = '<option value="">Choisir\u2026</option>';
-  selP.innerHTML = '<option value="">Toutes</option>';
+  selP.innerHTML = '<option value="">Choisir\u2026</option>';
   document.getElementById('result-card').classList.remove('visible');
+  resetEmail();
   if (!l) {
     setState('l','active'); setState('h','disabled'); setState('p','disabled');
     document.getElementById('empty-state').style.display = 'block';
@@ -213,8 +247,7 @@ selL.addEventListener('change', function() {
   hauteurs.sort(function(a,b){ return a-b; });
   hauteurs.forEach(function(v) {
     var o = document.createElement('option');
-    o.value = v; o.textContent = v + ' cm';
-    selH.appendChild(o);
+    o.value = v; o.textContent = v + ' cm'; selH.appendChild(o);
   });
   setState('l','done'); setState('h','active'); setState('p','disabled');
   document.getElementById('empty-state').style.display = 'block';
@@ -224,8 +257,9 @@ selL.addEventListener('change', function() {
 
 selH.addEventListener('change', function() {
   var h = parseInt(selH.value);
-  selP.innerHTML = '<option value="">Toutes</option>';
+  selP.innerHTML = '<option value="">Choisir\u2026</option>';
   document.getElementById('result-card').classList.remove('visible');
+  resetEmail();
   if (!h) {
     setState('h','active'); setState('p','disabled');
     document.getElementById('empty-state').style.display = 'block';
@@ -234,13 +268,12 @@ selH.addEventListener('change', function() {
   }
   portees.forEach(function(v) {
     var o = document.createElement('option');
-    o.value = v; o.textContent = v + ' m';
-    selP.appendChild(o);
+    o.value = v; o.textContent = v + ' m'; selP.appendChild(o);
   });
   setState('h','done'); setState('p','active');
   document.getElementById('empty-state').style.display = 'block';
-  document.getElementById('empty-state').textContent = 'Choisis une portée ou consulte toutes les valeurs.';
-  compute();
+  document.getElementById('empty-state').textContent = 'Choisis maintenant la portée.';
+  renderTable(null);
 });
 
 selP.addEventListener('change', compute);
@@ -249,13 +282,14 @@ function compute() {
   var l = parseInt(selL.value);
   var h = parseInt(selH.value);
   var p = selP.value;
-  if (!l || !h) return;
+  if (!l || !h || !p) return;
   var row = null;
   for (var i=0; i<data.length; i++) {
     if (data[i][1]===l && data[i][2]===h) { row=data[i]; break; }
   }
   if (!row) return;
-  if (p) setState('p','done'); else setState('p','active');
+  currentRow = row;
+  setState('p','done');
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('result-card').classList.add('visible');
   document.getElementById('res-dim').textContent = row[0] + ' cm';
@@ -266,9 +300,19 @@ function compute() {
   }).join('');
   var cste = row[9];
   var note = 'Constante : <strong>'+fmt(cste)+'</strong> — pour toute portée L : charge = '+fmt(cste)+' ÷ L';
-  if (p) note += ' → <strong>'+fmt(Math.round(cste / parseInt(p)))+' kg</strong> pour '+p+' m';
+  note += ' → <strong>'+fmt(Math.round(cste / parseInt(p)))+' kg</strong> pour '+p+' m';
   document.getElementById('res-const').innerHTML = note;
   renderTable(row[0]);
+  showEmailBlock(row);
+}
+
+function sendEmail() {
+  var email = document.getElementById('email-input').value.trim();
+  if (!email || !currentRow) return;
+  document.getElementById('email-block').classList.remove('visible');
+  document.getElementById('confirm-text').textContent = 'Résultat envoyé à ' + email;
+  document.getElementById('confirm-sub').textContent = 'La fiche ' + currentRow[0] + ' cm est en route.';
+  document.getElementById('email-confirm').classList.add('visible');
 }
 
 function renderTable(activeDim) {
@@ -286,7 +330,6 @@ document.getElementById('toggle-btn').addEventListener('click', function() {
 });
 
 renderTable(null);
-sendHeight();
 </script>
 
 </body>
